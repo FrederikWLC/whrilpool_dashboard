@@ -1,0 +1,3 @@
+from plots.historical import historical_figure
+from plots.point_estimate import point_estimate_figure
+from plots.quantile_estimate import quantile_estimate_figure
