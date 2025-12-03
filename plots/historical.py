@@ -84,9 +84,10 @@ def historical_figure(df_sku, selected_sku):
     fig_hist.update_xaxes(title_text="Date", row=3, col=1)
 
     fig_hist.update_layout(
-        height=780,
+        height=700,
         template="simple_white",
         showlegend=False,
-        title=dict(text=f"Historical Time Series — {selected_sku}", x=0,font=dict(size=20)),
+        title=dict(text=f"Historical Time Series — {selected_sku}", x=0,font=dict(size=20))
+        
     )
     return fig_hist

@@ -105,6 +105,7 @@ def main():
     st.markdown(
         """
         <style>
+
         .block-container {
             padding-top: 1rem;
             padding-bottom: 2rem;
@@ -112,8 +113,11 @@ def main():
             padding-right: 2rem;
         }
 
+        [data-testid="stMetricLabel"] { font-size: 0.65rem !important; }
+        [data-testid="stMetricValue"] { font-size: 2rem !important; }
+
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-        font-size:1.5rem;
+        font-size:1.2rem;
         }
         </style>
         """,

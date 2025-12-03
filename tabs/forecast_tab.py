@@ -3,7 +3,6 @@ import pandas as pd
 from prophet import Prophet
 
 def detect_default_columns(df: pd.DataFrame):
-    """Heuristic detection of common column roles."""
     cols_lower = {c.lower(): c for c in df.columns}
     res = {
         "date": None,
@@ -61,7 +60,6 @@ def detect_default_columns(df: pd.DataFrame):
     return res
 
 def forecast_tab(df: pd.DataFrame):
-    st.subheader("Forecast — Global Demand Trend & Seasonality")
 
     defaults = detect_default_columns(df)
     date_col = defaults.get("date")
@@ -89,9 +87,6 @@ def forecast_tab(df: pd.DataFrame):
         st.warning("No positive demand values available for forecasting.")
         return
 
-    st.caption(
-        "This forecast uses Meta's Prophet on total demand, to extract long-term trend and recurring yearly patterns."
-    )
 
     try:
         m = Prophet(

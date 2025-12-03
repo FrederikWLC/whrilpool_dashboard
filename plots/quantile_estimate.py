@@ -194,9 +194,8 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
     fig_quant.update_yaxes(title_text="DCM (MXN)", row=1, col=1)
     fig_quant.update_yaxes(title_text="Quantity", row=2, col=1)
     fig_quant.update_layout(
-        height=640,
+        height=500,
         template="simple_white",
-        title="Quantile Estimate Price Grid — DCM & Quantity Uncertainty Bands",
         shapes=[
             # Vertical green dashed line aligned with optimal price
             dict(
@@ -208,7 +207,14 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
                 y1=1.05,
                 line=dict(color="green", width=7.5, dash="solid"),
             )
-        ]
+        ],
+        margin=dict(l=0, r=0, t=0, b=0),
+        legend=dict(
+            x=1.02,     # slightly outside plot
+            y=0.75,      # vertical center
+            xanchor="left",
+            yanchor="middle"
+        )
     )
 
     return fig_quant

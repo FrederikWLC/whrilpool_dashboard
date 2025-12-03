@@ -136,8 +136,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             )
         ],
         height=640,
-        template="simple_white",
-        title="Point Estimate Price Grid — DCM & Quantity Curves",
+        template="simple_white"
     )
 
 
@@ -145,8 +144,14 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
     fig_point.update_yaxes(title_text="DCM (MXN)", row=1, col=1)
     fig_point.update_yaxes(title_text="Quantity", row=2, col=1)
     fig_point.update_layout(
-        height=640,
+        height=500,
         template="simple_white",
-        title="Point Estimate Price Grid — DCM & Quantity Curves",
+        margin=dict(l=0, r=0, t=0, b=0),
+        legend=dict(
+            x=1.02,     # slightly outside plot
+            y=0.75,      # vertical center
+            xanchor="left",
+            yanchor="middle"
+        )
     )
     return fig_point
