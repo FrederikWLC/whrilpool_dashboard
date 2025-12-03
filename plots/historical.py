@@ -20,6 +20,14 @@ def historical_figure(df_sku, selected_sku):
             line=dict(color="lightgreen", width=3),
             marker=dict(size=7),
             hovertemplate="Date: %{x}<br>DCM: %{y:.2f} MXN<extra></extra>",
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
         ),
         row=1,
         col=1,
@@ -36,6 +44,14 @@ def historical_figure(df_sku, selected_sku):
             line=dict(color="lightblue", width=3),
             marker=dict(size=7),
             hovertemplate="Date: %{x}<br>Quantity: %{y}<extra></extra>",
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
         ),
         row=2,
         col=1,
@@ -52,6 +68,14 @@ def historical_figure(df_sku, selected_sku):
             line=dict(color="darkgrey", width=3),
             marker=dict(size=7),
             hovertemplate="Date: %{x}<br>Price: %{y:.2f} MXN<extra></extra>",
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
         ),
         row=3,
         col=1,

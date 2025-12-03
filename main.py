@@ -2,25 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plots
 import os
 import warnings
 from tabs import history_tab, forecast_tab, optimization_tab
-
-# Optional heavy deps
-try:
-    from prophet import Prophet
-    HAS_PROPHET = True
-except Exception:
-    Prophet = None
-    HAS_PROPHET = False
-
-try:
-    import xgboost as xgb
-    HAS_XGBOOST = True
-except Exception:
-    xgb = None
-    HAS_XGBOOST = False
+from data import get_df_sku
+from components import selection_field
 
 # -----------------------------
 # Helpers
@@ -89,7 +75,6 @@ def load_data(uploaded_file=None):
 
     return df
 
-
 def numeric_cols(df: pd.DataFrame):
     return df.select_dtypes(include=[np.number]).columns.tolist()
 
@@ -126,11 +111,15 @@ def main():
             padding-left: 2rem;
             padding-right: 2rem;
         }
+
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+        font-size:1.5rem;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
+    
     st.title("Whirlpool — Sales & Price Optimization")
     st.caption(
         "Unified dashboard with sales analytics, global demand forecasting, and advanced price optimization."
@@ -149,25 +138,24 @@ def main():
         return
 
     st.sidebar.markdown(f"**Rows:** {df.shape[0]}  \n**Columns:** {df.shape[1]}")
-    show_sample = st.sidebar.checkbox("Show data sample")
+
+    selected_sku, selected_tp = selection_field(df)
+    df_sku = get_df_sku(df, selected_sku, selected_tp)
 
     # Tabs
     tab1, tab2, tab3 = st.tabs(
         ["Sales History", "Forecast", "Price Optimization Grid"]
     )
 
+
     with tab1:
-        history_tab(df)
+        history_tab(df_sku)
 
     with tab2:
-        forecast_tab(df)
+        forecast_tab(df_sku)
 
     with tab3:
-        optimization_tab(df)
-
-    if show_sample:
-        st.subheader("Data sample")
-        st.dataframe(df.head(200))
+        optimization_tab(df_sku)
 
 
 if __name__ == "__main__":

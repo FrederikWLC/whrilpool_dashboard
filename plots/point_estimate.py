@@ -9,19 +9,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
         vertical_spacing=0.08,
         row_heights=[0.55, 0.45],
     )
-    # Top: DCM
-    fig_point.add_trace(
-        go.Scatter(
-            x=df_sku["price_final"],
-            y=df_sku["dcm"],
-            mode="markers",
-            name="Historical",
-            marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
-        ),
-        row=1,
-        col=1,
-    )
+    
     fig_point.add_trace(
         go.Scatter(
             x=price_grid,
@@ -30,10 +18,42 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             name="Predicted DCM",
             line=dict(color="blue", width=3),
             hovertemplate="Price: %{x:.2f} MXN<br>Pred DCM: %{y:.2f} MXN<extra></extra>",
+            legendrank=1,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
         ),
         row=1,
         col=1,
     )
+
+    fig_point.add_trace(
+        go.Scatter(
+            x=price_grid,
+            y=q_pred_point,
+            mode="lines",
+            name="Predicted Quantity",
+            line=dict(color="blue", width=3, dash="dash"),
+            hovertemplate="Price: %{x:.2f} MXN<br>Pred Qty: %{y}<extra></extra>",
+            legendrank=2,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=2,
+        col=1,
+    )
+
     fig_point.add_trace(
         go.Scatter(
             x=[best_price_point],
@@ -42,8 +62,63 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             name="Optimal Price",
             marker=dict(size=12, color="green"),
             hovertemplate="Optimal Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            legendrank=3,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
         ),
         row=1,
+        col=1,
+    )
+
+    # Top: DCM
+    fig_point.add_trace(
+        go.Scatter(
+            x=df_sku["price_final"],
+            y=df_sku["dcm"],
+            mode="markers",
+            name="Historical DCM",
+            marker=dict(size=6, opacity=0.8, color="black"),
+            hovertemplate="Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            legendrank=4,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=1,
+        col=1,
+    )
+
+    # Bottom: Quantity
+    fig_point.add_trace(
+        go.Scatter(
+            x=df_sku["price_final"],
+            y=df_sku["quantity"],
+            mode="markers",
+            name="Historical Quantity",
+            marker=dict(size=6, opacity=0.8, color="black"),
+            hovertemplate="Price: %{x:.2f} MXN<br>Quantity: %{y}<extra></extra>",
+            legendrank=5,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=2,
         col=1,
     )
 
@@ -65,31 +140,6 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
         title="Point Estimate Price Grid — DCM & Quantity Curves",
     )
 
-    # Bottom: Quantity
-    fig_point.add_trace(
-        go.Scatter(
-            x=df_sku["price_final"],
-            y=df_sku["quantity"],
-            mode="markers",
-            name="Historical",
-            marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Quantity: %{y}<extra></extra>",
-        ),
-        row=2,
-        col=1,
-    )
-    fig_point.add_trace(
-        go.Scatter(
-            x=price_grid,
-            y=q_pred_point,
-            mode="lines",
-            name="Predicted Quantity",
-            line=dict(color="blue", width=3, dash="dash"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Pred Qty: %{y}<extra></extra>",
-        ),
-        row=2,
-        col=1,
-    )
 
     fig_point.update_xaxes(title_text="Price (MXN)", row=2, col=1)
     fig_point.update_yaxes(title_text="DCM (MXN)", row=1, col=1)

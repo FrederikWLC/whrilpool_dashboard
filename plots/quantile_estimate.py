@@ -15,17 +15,139 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
         row_heights=[0.55, 0.45],
     )
 
+    fig_quant.add_trace(
+        go.Scatter(
+            x=price_grid,
+            y=dcm_M,
+            mode="lines",
+            name="Predicted DCM",
+            line=dict(color="blue", width=3),
+            hovertemplate="Price: %{x:.2f} MXN<br>Predicted DCM: %{y:.2f} MXN<extra></extra>",
+            legendrank=1,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=1,
+        col=1,
+    )
+
+    fig_quant.add_trace(
+        go.Scatter(
+            x=price_grid,
+            y=qM,
+            mode="lines",
+            name="Predicted Quantity",
+            line=dict(width=3, dash="dash", color="blue"),
+            hovertemplate="Price: %{x:.2f} MXN<br>Predicted Qty: %{y}<extra></extra>",
+            legendrank=2,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=2,
+        col=1,
+    )
+
+    fig_quant.add_trace(
+        go.Scatter(
+            x=price_grid,
+            y=dcm_U,
+            mode="lines",
+            fill="tonexty",
+            fillcolor="rgba(0,120,255,0.15)",
+            line=dict(width=0),
+            name="DCM Uncertainty Band",
+            hoverinfo='none',
+            legendrank=3,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=1,
+        col=1,
+    )
+
+    fig_quant.add_trace(
+        go.Scatter(
+            x=[best_price_quant],
+            y=[best_dcm_quant],
+            mode="markers",
+            name="Optimal Price",
+            marker=dict(size=11, color="green"),
+            hovertemplate="Optimal Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            legendrank=4,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=1,
+        col=1,
+    )
+
     # Top: DCM band
     fig_quant.add_trace(
         go.Scatter(
             x=df_sku["price_final"],
             y=df_sku["dcm"],
             mode="markers",
-            name="Historical",
+            name="Historical DCM",
             marker=dict(size=6, opacity=0.8, color="black"),
             hovertemplate="Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            legendrank=5,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
         ),
         row=1,
+        col=1,
+    )
+
+    # Bottom: Quantity band
+    fig_quant.add_trace(
+        go.Scatter(
+            x=df_sku["price_final"],
+            y=df_sku["quantity"],
+            mode="markers",
+            name="Historical Quantity",
+            marker=dict(size=6, opacity=0.8, color="black"),
+            hovertemplate="Price: %{x:.2f} MXN<br>Qty: %{y}<extra></extra>",
+            legendrank=6,
+            hoverlabel=dict(
+                font=dict(
+                    size=16,  # Set the desired font size here (e.g., 16)
+                    color='white'
+                ),
+                bgcolor='rgba(0,0,0,0.7)', # Optional: Customize background color
+                bordercolor='white' # Optional: Customize border color
+            )
+        ),
+        row=2,
         col=1,
     )
     fig_quant.add_trace(
@@ -40,77 +162,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
         row=1,
         col=1,
     )
-    fig_quant.add_trace(
-        go.Scatter(
-            x=price_grid,
-            y=dcm_U,
-            mode="lines",
-            fill="tonexty",
-            fillcolor="rgba(0,120,255,0.15)",
-            line=dict(width=0),
-            name="DCM Uncertainty Band",
-            hoverinfo='none'
-        ),
-        row=1,
-        col=1,
-    )
-    fig_quant.add_trace(
-        go.Scatter(
-            x=price_grid,
-            y=dcm_M,
-            mode="lines",
-            name="Median DCM",
-            line=dict(color="blue", width=3),
-            hovertemplate="Price: %{x:.2f} MXN<br>Median DCM: %{y:.2f} MXN<extra></extra>",
-        ),
-        row=1,
-        col=1,
-    )
-    fig_quant.add_trace(
-        go.Scatter(
-            x=[best_price_quant],
-            y=[best_dcm_quant],
-            mode="markers",
-            name="Optimal Price (Median)",
-            marker=dict(size=11, color="green"),
-            hovertemplate="Optimal Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
-        ),
-        row=1,
-        col=1,
-    )
 
-    fig_quant.update_layout(
-        shapes=[
-            # Vertical green dashed line aligned with optimal price
-            dict(
-                type="line",
-                x0=best_price_quant,
-                x1=best_price_quant,
-                yref="paper",
-                y0=0,
-                y1=1.05,
-                line=dict(color="green", width=7.5, dash="solid"),
-            )
-        ],
-        height=640,
-        template="simple_white",
-        title="Point Estimate Price Grid — DCM & Quantity Curves",
-    )
-
-    # Bottom: Quantity band
-    fig_quant.add_trace(
-        go.Scatter(
-            x=df_sku["price_final"],
-            y=df_sku["quantity"],
-            mode="markers",
-            name="Historical",
-            marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Qty: %{y}<extra></extra>",
-            showlegend=False
-        ),
-        row=2,
-        col=1,
-    )
     fig_quant.add_trace(
         go.Scatter(
             x=price_grid,
@@ -118,6 +170,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             mode="lines",
             line=dict(width=0),
             showlegend=False,
+            hoverinfo='none'
         ),
         row=2,
         col=1,
@@ -131,18 +184,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             fillcolor="rgba(0,120,255,0.15)",
             line=dict(width=0),
             showlegend=False,
-        ),
-        row=2,
-        col=1,
-    )
-    fig_quant.add_trace(
-        go.Scatter(
-            x=price_grid,
-            y=qM,
-            mode="lines",
-            name="Median Quantity",
-            line=dict(width=3, dash="dash", color="blue"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Median Qty: %{y}<extra></extra>",
+            hoverinfo='none'
         ),
         row=2,
         col=1,
@@ -155,6 +197,18 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
         height=640,
         template="simple_white",
         title="Quantile Estimate Price Grid — DCM & Quantity Uncertainty Bands",
+        shapes=[
+            # Vertical green dashed line aligned with optimal price
+            dict(
+                type="line",
+                x0=best_price_quant,
+                x1=best_price_quant,
+                yref="paper",
+                y0=0,
+                y1=1.05,
+                line=dict(color="green", width=7.5, dash="solid"),
+            )
+        ]
     )
 
     return fig_quant

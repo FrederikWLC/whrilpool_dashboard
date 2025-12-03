@@ -1,67 +1,22 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-import plots
 import xgboost as xgb
+import plots
 
-def optimization_tab(df: pd.DataFrame):
-    st.subheader("Price Optimization Grid — XGBoost Point & Quantile Models")
 
-    # Required columns as in your advanced grid
-    required_cols = ["sku", "trade_partner", "price_final", "dcm", "quantity"]
-    missing = [c for c in required_cols if c not in df.columns]
-    if missing:
-        st.error(f"Missing required columns for price optimization: {missing}")
-        return
+def optimization_tab(df_sku: pd.DataFrame):
 
-    # SKU selection
-    sku_list = sorted(df["sku"].dropna().unique())
-    selected_sku = st.selectbox("Select SKU", sku_list)
-    df_sku = df[df["sku"] == selected_sku].copy()
+    base_row = df_sku.iloc[[0]]
+    cost = float(base_row["total_variable_cost"]) if "total_variable_cost" in base_row else 0.0
 
-    # Optional trade partner filter
-    tp_list = ["All"] + sorted(df_sku["trade_partner"].dropna().unique())
-    selected_tp = st.selectbox("Select Trade Partner (optional)", tp_list)
-    if selected_tp != "All":
-        df_sku = df_sku[df_sku["trade_partner"] == selected_tp]
-
-    if df_sku.shape[0] < 10:
-        st.warning("Not enough observations for this (SKU, trade partner) selection.")
-        return
-
-    # Build or reconstruct a usable date column for time series
-    if "date" in df_sku.columns:
-        df_sku["date"] = pd.to_datetime(df_sku["date"], errors="coerce")
-    elif "year" in df_sku.columns and "iso_week" in df_sku.columns:
-        df_sku["date"] = pd.to_datetime(
-            df_sku["year"].astype(str) + df_sku["iso_week"].astype(str) + "1",
-            format="%G%V%u",
-            errors="coerce",
-        )
-    else:
-        st.error("No usable date column found (need 'date', or 'year' + 'iso_week').")
-        return
-
-    df_sku = df_sku.dropna(subset=["date"]).sort_values("date")
-
-    # -------- Approximate variable cost --------
-    base_row = df_sku.iloc[[0]].copy()
-    if "mean_total_variable_cost" in df_sku.columns:
-        cost = float(base_row["mean_total_variable_cost"].iloc[0])
-    else:
-        tmp = df_sku[df_sku["quantity"] > 0].copy()
-        if not tmp.empty:
-            tmp["approx_cost"] = tmp["price_final"] - tmp["dcm"] / tmp["quantity"]
-            cost = float(tmp["approx_cost"].mean())
-        else:
-            cost = float(base_row["price_final"].iloc[0]) * 0.7
-
-    actual_price = float(base_row["price_final"].iloc[0])
-    p_min = max(actual_price * 0.5, cost)
+    # Pricing exploration window
+    actual_price = float(base_row["price_final"])
+    p_min = actual_price * 0.5
     p_max = actual_price * 1.5
     price_grid = np.linspace(p_min, p_max, 150)
 
-    # Feature set
+    # Features for the model
     candidate_features = [
         "price_final",
         "mean_price_final",
@@ -75,113 +30,122 @@ def optimization_tab(df: pd.DataFrame):
     if "price_final" not in features:
         features.append("price_final")
 
-    df_model = df_sku.dropna(subset=features + ["quantity"]).copy()
+    df_model = df_sku.dropna(subset=features + ["quantity"])
     if df_model.shape[0] < 10:
-        st.warning("Not enough clean rows with all required features for modeling.")
+        st.warning("Not enough clean rows with required features.")
         return
 
     X = df_model[features]
     y = df_model["quantity"]
     has_inv = "real_inventory" in df_model.columns
 
-    # ========= 1. Historical performance =========
-    st.markdown("### 1. Historical Performance (DCM → Quantity → Price)")
-
-    st.plotly_chart(plots.historical_figure(df_sku,selected_sku), use_container_width=True)
-
-    # ========= 2. Point estimate XGBoost model =========
-    st.markdown("### 2. Point Estimate Model (XGBoost)")
-
-    params_point = {
-        "n_estimators": 350,
-        "learning_rate": 0.05,
-        "max_depth": 4,
-        "subsample": 0.9,
-        "colsample_bytree": 0.9,
-        "objective": "reg:squarederror",
-        "random_state": 42,
-    }
-    point_model = xgb.XGBRegressor(**params_point)
-    point_model.fit(X, y)
-
     df_grid_point = pd.concat([base_row] * len(price_grid), ignore_index=True)
     df_grid_point["price_final"] = price_grid
     X_grid_point = df_grid_point[features]
 
-    q_pred_point = np.round(point_model.predict(X_grid_point))
+    # Model choice UI
+    model_type = st.radio(
+        "Choose estimator:",
+        ["Point", "Quantile"],
+        horizontal=True
+    )
 
-    if has_inv:
-        inv = df_grid_point["real_inventory"].values
-        q_pred_point = np.round(np.minimum(np.maximum(q_pred_point, 0), inv))
+    if model_type == "Point":
+        point_tab(
+            df_sku=df_sku,
+            price_grid=price_grid,
+            X=X,
+            y=y,
+            cost=cost,
+            has_inv=has_inv,
+            df_grid_point=df_grid_point,
+            X_grid_point=X_grid_point,
+        )
     else:
-        q_pred_point = np.round(np.maximum(q_pred_point, 0))
+        quant_tab(
+            df_sku=df_sku,
+            price_grid=price_grid,
+            X=X,
+            y=y,
+            cost=cost,
+            has_inv=has_inv,
+            df_grid_point=df_grid_point,
+            X_grid_point=X_grid_point,
+        )
 
-    dcm_point = (df_grid_point["price_final"].values - cost) * q_pred_point
-    best_idx_point = int(np.argmax(dcm_point))
-    best_price_point = float(df_grid_point["price_final"].iloc[best_idx_point])
-    best_dcm_point = float(dcm_point[best_idx_point])
 
-   
+def point_tab(df_sku, price_grid, X, y, cost, has_inv,
+              df_grid_point, X_grid_point):
 
-    st.metric("Optimal Price (Point Estimate)", f"{best_price_point:,.2f} MXN")
-    st.plotly_chart(plots.point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_dcm_point, q_pred_point), use_container_width=True)
+    params_point = dict(
+        n_estimators=350,
+        learning_rate=0.05,
+        max_depth=4,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        objective="reg:squarederror",
+        random_state=42,
+    )
+    model = xgb.XGBRegressor(**params_point).fit(X, y)
 
-    # ========= 3. Quantile XGBoost model =========
-    st.markdown("### 3. Quantile Model (Uncertainty Band)")
+    q_pred = model.predict(X_grid_point)
+    q_pred = np.maximum(q_pred, 0)
+    if has_inv:
+        q_pred = np.minimum(q_pred, df_grid_point["real_inventory"].values)
+    q_pred = np.round(q_pred)
+
+    dcm = (price_grid - cost) * q_pred
+    best_idx = int(np.argmax(dcm))
+    best_price = float(price_grid[best_idx])
+    best_dcm = float(dcm[best_idx])
+
+    st.metric("Estimated Optimal Price", f"{best_price:,.2f} MXN")
+
+    fig = plots.point_estimate_figure(df_sku, price_grid, dcm,
+                                      best_price, best_dcm, q_pred)
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def quant_tab(df_sku, price_grid, X, y, cost, has_inv,
+              df_grid_point, X_grid_point):
 
     quantiles = {"lower": 0.05, "median": 0.5, "upper": 0.95}
-    q_models = {}
-    base_params = {
-        "n_estimators": 350,
-        "learning_rate": 0.05,
-        "max_depth": 4,
-        "subsample": 0.9,
-        "colsample_bytree": 0.9,
-        "random_state": 42,
-    }
+    base_params = dict(
+        n_estimators=350,
+        learning_rate=0.05,
+        max_depth=4,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        random_state=42,
+    )
 
-    for name_q, alpha in quantiles.items():
-        params_q = base_params.copy()
-        params_q.update(
-            {
-                "objective": "reg:quantileerror",
-                "quantile_alpha": alpha,
-            }
-        )
-        m_q = xgb.XGBRegressor(**params_q)
-        m_q.fit(X, y)
-        q_models[name_q] = m_q
+    q_pred = {}
+    for name, alpha in quantiles.items():
+        params = base_params.copy()
+        params.update(objective="reg:quantileerror", quantile_alpha=alpha)
+        model = xgb.XGBRegressor(**params).fit(X, y)
+        q_pred[name] = model.predict(X_grid_point)
 
-    qL = q_models["lower"].predict(X_grid_point)
-    qM = q_models["median"].predict(X_grid_point)
-    qU = q_models["upper"].predict(X_grid_point)
+    qL, qM, qU = (np.maximum(q_pred[k], 0) for k in ["lower", "median", "upper"])
 
     if has_inv:
         inv = df_grid_point["real_inventory"].values
-        qL = np.round(np.minimum(np.maximum(qL, 0), inv))
-        qM = np.round(np.minimum(np.maximum(qM, 0), inv))
-        qU = np.round(np.minimum(np.maximum(qU, 0), inv))
-    else:
-        qL = np.round(np.maximum(qL, 0))
-        qM = np.round(np.maximum(qM, 0))
-        qU = np.round(np.maximum(qU, 0))
+        qL = np.minimum(qL, inv)
+        qM = np.minimum(qM, inv)
+        qU = np.minimum(qU, inv)
+
+    qL, qM, qU = np.round(qL), np.round(qM), np.round(qU)
 
     dcm_L = (price_grid - cost) * qL
     dcm_M = (price_grid - cost) * qM
     dcm_U = (price_grid - cost) * qU
 
-    best_price_quant = float(df_grid_point["price_final"].iloc[best_idx_point])
+    best_price = float(price_grid[np.argmax(dcm_M)])
+    st.metric("Estimated Optimal Price", f"{best_price:,.2f} MXN")
 
-    st.metric("Optimal Price (Quantile Median)", f"{best_price_quant:,.2f} MXN")
-    st.plotly_chart(plots.quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU), use_container_width=True)
-
-    st.markdown(
-        """
-        **Interpretation:**
-
-        - The **point model** gives a single expected outcome for each price.
-        - The **quantile band** adds a pessimistic (5%) and optimistic (95%) scenario for both DCM and quantity.
-        - The recommended price is where **median DCM** is highest, while still keeping the band in a comfortable risk zone.
-        """
+    fig = plots.quantile_estimate_figure(
+        df_sku, price_grid,
+        dcm_L, dcm_M, dcm_U,
+        qL, qM, qU
     )
-
+    st.plotly_chart(fig, use_container_width=True)
