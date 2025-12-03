@@ -40,11 +40,29 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             y=[best_dcm_point],
             mode="markers",
             name="Optimal Price",
-            marker=dict(size=11, color="green"),
+            marker=dict(size=12, color="green"),
             hovertemplate="Optimal Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
         ),
         row=1,
         col=1,
+    )
+
+    fig_point.update_layout(
+        shapes=[
+            # Vertical green dashed line aligned with optimal price
+            dict(
+                type="line",
+                x0=best_price_point,
+                x1=best_price_point,
+                yref="paper",
+                y0=0,
+                y1=1.05,
+                line=dict(color="green", width=7.5, dash="solid"),
+            )
+        ],
+        height=640,
+        template="simple_white",
+        title="Point Estimate Price Grid — DCM & Quantity Curves",
     )
 
     # Bottom: Quantity

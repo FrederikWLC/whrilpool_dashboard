@@ -79,6 +79,24 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
         col=1,
     )
 
+    fig_quant.update_layout(
+        shapes=[
+            # Vertical green dashed line aligned with optimal price
+            dict(
+                type="line",
+                x0=best_price_quant,
+                x1=best_price_quant,
+                yref="paper",
+                y0=0,
+                y1=1.05,
+                line=dict(color="green", width=7.5, dash="solid"),
+            )
+        ],
+        height=640,
+        template="simple_white",
+        title="Point Estimate Price Grid — DCM & Quantity Curves",
+    )
+
     # Bottom: Quantity band
     fig_quant.add_trace(
         go.Scatter(
