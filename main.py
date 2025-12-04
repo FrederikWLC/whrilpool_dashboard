@@ -95,7 +95,7 @@ def aggregate_timeseries(df: pd.DataFrame, date_col: str, value_col: str, freq: 
 # -----------------------------
 def main():
     st.set_page_config(
-        page_title="Whirlpool — Sales & Price Optimization",
+        page_title="Whirlpool - Price Optimization",
         layout="wide",
         initial_sidebar_state="expanded",
     )
@@ -124,9 +124,18 @@ def main():
         unsafe_allow_html=True,
     )
     
-    st.title("Whirlpool — Sales & Price Optimization")
+    st.title("Whirlpool — Price Optimization Dashboard")
     st.caption(
-        "Unified dashboard with sales analytics, global demand forecasting, and advanced price optimization."
+        "A user-friendly dashboard with sales analytics, demand forecasting, and price optimization — just provide the data!"
+    )
+
+    st.sidebar.markdown(
+        """
+        <div style="text-align: center;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Whirlpool_Corporation_Logo_%28as_of_2017%29.svg/2560px-Whirlpool_Corporation_Logo_%28as_of_2017%29.svg.png" alt="Whirlpool Logo" width="150">
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     # Sidebar: data input
