@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from prophet import Prophet
+from matplotlib import pyplot as plt
 
 def detect_default_columns(df: pd.DataFrame):
     cols_lower = {c.lower(): c for c in df.columns}
@@ -99,8 +100,8 @@ def forecast_tab(df: pd.DataFrame):
         future = m.make_future_dataframe(periods=0, freq="M")
         fcst = m.predict(future)
 
-        # Trend + yearly seasonality components
-        fig_components = m.plot_components(fcst)
+        fig_components = m.plot_components(fcst, figsize=(15, 6))  # (width, height) in inches
+        fig_components.tight_layout()
         st.pyplot(fig_components)
     except Exception as e:
         st.error(f"Prophet failed: {e}")
