@@ -107,6 +107,16 @@ def main():
         """
         <style>
 
+        /* Hide Streamlit header */
+        header[data-testid="stHeader"] {
+            display: none;
+        }
+
+        /* Optionally remove the global toolbar shadow area */
+        header {
+            height: 0 !important;
+        }
+
         .block-container {
             padding-top: 1rem;
             padding-bottom: 2rem;
