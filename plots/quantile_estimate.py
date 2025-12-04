@@ -22,7 +22,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             mode="lines",
             name="Predicted DCM",
             line=dict(color="blue", width=3),
-            hovertemplate="Price: %{x:.2f} MXN<br>Predicted DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>Predicted DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=1,
             hoverlabel=dict(
                 font=dict(
@@ -44,7 +44,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             mode="lines",
             name="Predicted Quantity",
             line=dict(width=3, dash="dash", color="blue"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Predicted Qty: %{y}<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>Predicted Qty: %{y}<extra></extra>",
             legendrank=2,
             hoverlabel=dict(
                 font=dict(
@@ -90,7 +90,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             mode="markers",
             name="Optimal Price",
             marker=dict(size=11, color="green"),
-            hovertemplate="Optimal Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Optimal Price: %{x:,.2f} MXN<br>DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=4,
             hoverlabel=dict(
                 font=dict(
@@ -113,7 +113,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             mode="markers",
             name="Historical DCM",
             marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=5,
             hoverlabel=dict(
                 font=dict(
@@ -136,7 +136,7 @@ def quantile_estimate_figure(df_sku, price_grid, dcm_L, dcm_M, dcm_U, qL, qM, qU
             mode="markers",
             name="Historical Quantity",
             marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Qty: %{y}<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>Qty: %{y}<extra></extra>",
             legendrank=6,
             hoverlabel=dict(
                 font=dict(

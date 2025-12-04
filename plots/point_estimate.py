@@ -17,7 +17,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="lines",
             name="Predicted DCM",
             line=dict(color="blue", width=3),
-            hovertemplate="Price: %{x:.2f} MXN<br>Pred DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>Pred DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=1,
             hoverlabel=dict(
                 font=dict(
@@ -39,7 +39,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="lines",
             name="Predicted Quantity",
             line=dict(color="blue", width=3, dash="dash"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Pred Qty: %{y}<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>Pred Qty: %{y}<extra></extra>",
             legendrank=2,
             hoverlabel=dict(
                 font=dict(
@@ -61,7 +61,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="markers",
             name="Optimal Price",
             marker=dict(size=12, color="green"),
-            hovertemplate="Optimal Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Optimal Price: %{x:,.2f} MXN<br>DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=3,
             hoverlabel=dict(
                 font=dict(
@@ -84,7 +84,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="markers",
             name="Historical DCM",
             marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=4,
             hoverlabel=dict(
                 font=dict(
@@ -107,7 +107,7 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="markers",
             name="Historical Quantity",
             marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:.2f} MXN<br>Quantity: %{y}<extra></extra>",
+            hovertemplate="Price: %{x:,.2f} MXN<br>Quantity: %{y}<extra></extra>",
             legendrank=5,
             hoverlabel=dict(
                 font=dict(

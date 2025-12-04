@@ -143,7 +143,7 @@ def main():
 
     st.sidebar.markdown(f"**Rows:** {df.shape[0]}  \n**Columns:** {df.shape[1]}")
 
-    selected_sku, selected_tp = selection_field(df)
+    selected_product_type, selected_sku, selected_tp, selected_date = selection_field(df)
     df_sku = get_df_sku(df, selected_sku, selected_tp)
 
     # Tabs

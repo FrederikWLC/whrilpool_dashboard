@@ -19,7 +19,7 @@ def historical_figure(df_sku, selected_sku):
             name="DCM",
             line=dict(color="lightgreen", width=3),
             marker=dict(size=7),
-            hovertemplate="Date: %{x}<br>DCM: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Date: %{x|%b %d, %Y}<br>DCM: %{y:,.2f} MXN<extra></extra>",
             hoverlabel=dict(
                 font=dict(
                     size=16,  # Set the desired font size here (e.g., 16)
@@ -43,7 +43,7 @@ def historical_figure(df_sku, selected_sku):
             name="Quantity",
             line=dict(color="lightblue", width=3),
             marker=dict(size=7),
-            hovertemplate="Date: %{x}<br>Quantity: %{y}<extra></extra>",
+            hovertemplate="Date: %{x|%b %d, %Y}<br>Quantity: %{y:,.2f} MXN<extra></extra>",
             hoverlabel=dict(
                 font=dict(
                     size=16,  # Set the desired font size here (e.g., 16)
@@ -67,7 +67,7 @@ def historical_figure(df_sku, selected_sku):
             name="Price",
             line=dict(color="darkgrey", width=3),
             marker=dict(size=7),
-            hovertemplate="Date: %{x}<br>Price: %{y:.2f} MXN<extra></extra>",
+            hovertemplate="Date: %{x|%b %d, %Y}<br>Price: %{y:,.2f} MXN<extra></extra>",
             hoverlabel=dict(
                 font=dict(
                     size=16,  # Set the desired font size here (e.g., 16)
