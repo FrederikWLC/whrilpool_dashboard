@@ -98,6 +98,7 @@ def main():
         page_title="Whirlpool - Price Optimization",
         layout="wide",
         initial_sidebar_state="expanded",
+        page_icon="⚡",
     )
     warnings.filterwarnings("ignore")
 
