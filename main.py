@@ -29,9 +29,6 @@ def load_data(uploaded_file=None):
                 "No default dataset found. Please upload a CSV/Excel file in the sidebar."
             )
 
-    # Strip whitespace from column names
-    df.columns = [c.strip() for c in df.columns]
-
     # Parse date if present
     if "date" in df.columns:
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -63,25 +60,13 @@ def load_data(uploaded_file=None):
     for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-
-    if "gross_sales" in df.columns:
-        df["gross_sales"] = df["gross_sales"].fillna(0)
-    if "price_final" in df.columns:
-        df["price_final"] = df["price_final"].fillna(df["price_final"].median())
-    if "dcm" in df.columns:
-        df["dcm"] = df["dcm"].fillna(0)
-    if "demand" in df.columns:
-        df["demand"] = df["demand"].fillna(0)
-
     return df
 
 def numeric_cols(df: pd.DataFrame):
     return df.select_dtypes(include=[np.number]).columns.tolist()
 
-
 def categorical_cols(df: pd.DataFrame):
     return df.select_dtypes(include=["object", "category"]).columns.tolist()
-
 
 def aggregate_timeseries(df: pd.DataFrame, date_col: str, value_col: str, freq: str = "M"):
     s = df[[date_col, value_col]].copy()
@@ -166,10 +151,12 @@ def main():
         history_tab(df_sku)
 
     with tab2:
-        forecast_tab(df_sku)
-
+        if selected_date != None:
+            forecast_tab(df, df_sku, selected_sku, selected_date)
+        else:
+            forecast_tab(df, df_sku, selected_sku)
     with tab3:
-        optimization_tab(df_sku)
+            optimization_tab(df_sku,selected_date)
 
 
 if __name__ == "__main__":

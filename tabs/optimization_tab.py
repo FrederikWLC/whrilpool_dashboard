@@ -5,7 +5,11 @@ import xgboost as xgb
 import plots
 
 
-def optimization_tab(df_sku: pd.DataFrame):
+def optimization_tab(df_sku: pd.DataFrame,selected_date=None):
+
+    
+
+    df_sku["forecasted_demand"] = df_sku["demand"]
 
     base_row = df_sku.iloc[[0]]
     cost = float(base_row["total_variable_cost"]) if "total_variable_cost" in base_row else 0.0
@@ -42,6 +46,22 @@ def optimization_tab(df_sku: pd.DataFrame):
     df_grid_point = pd.concat([base_row] * len(price_grid), ignore_index=True)
     df_grid_point["price_final"] = price_grid
     X_grid_point = df_grid_point[features]
+    X_grid_point["forecasted_demand"].values[:] = st.session_state.get("specific_forecasted_demand",0) if selected_date else df_sku["demand"].mean()
+
+    df_sku["hover_text"] = (
+        "Y" + df_sku["year"].astype(str) +
+        " W" + df_sku["iso_week"].astype(str)
+    )
+
+    # Recency color scaling (if 'ds' + selected cutoff exist)
+    if selected_date is not None and "ds" in df_sku.columns:
+        sel_date = pd.to_datetime(selected_date)
+        recency = np.abs((df_sku["ds"] - sel_date).dt.days)
+        rec_norm = 1 - (recency / recency.max()).fillna(0)  # closer → higher
+    else:
+        rec_norm = np.full(len(df_sku), 0.5)  # neutral color fallback
+
+    df_sku["recency_norm"] = rec_norm
 
     # Model choice UI
     model_type = st.radio(
@@ -104,7 +124,6 @@ def point_tab(df_sku, price_grid, X, y, cost, has_inv,
     fig = plots.point_estimate_figure(df_sku, price_grid, dcm,
                                       best_price, best_dcm, q_pred)
     st.plotly_chart(fig, use_container_width=True)
-
 
 def quant_tab(df_sku, price_grid, X, y, cost, has_inv,
               df_grid_point, X_grid_point):

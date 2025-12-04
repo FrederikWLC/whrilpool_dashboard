@@ -84,7 +84,8 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="markers",
             name="Historical DCM",
             marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:,.2f} MXN<br>DCM: %{y:,.2f} MXN<extra></extra>",
+            text="Y" + df_sku["year"].astype(str) + " W" + df_sku["iso_week"].astype(str),
+            hovertemplate="Week: %{text}<br>Price: %{x:,.2f} MXN<br>DCM: %{y:,.2f} MXN<extra></extra>",
             legendrank=4,
             hoverlabel=dict(
                 font=dict(
@@ -107,7 +108,8 @@ def point_estimate_figure(df_sku, price_grid, dcm_point, best_price_point, best_
             mode="markers",
             name="Historical Quantity",
             marker=dict(size=6, opacity=0.8, color="black"),
-            hovertemplate="Price: %{x:,.2f} MXN<br>Quantity: %{y}<extra></extra>",
+             text="Y" + df_sku["year"].astype(str) + " W" + df_sku["iso_week"].astype(str),
+            hovertemplate="Week: %{text}<br>Price: %{x:,.2f} MXN<br>Quantity: %{y}<extra></extra>",
             legendrank=5,
             hoverlabel=dict(
                 font=dict(
