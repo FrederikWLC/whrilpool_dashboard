@@ -50,11 +50,8 @@ def get_demand_weekly(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_forecast_df(df,specific=False):
     # Scale demand between 0 and 1
-
-    if specific:
-        df_weekly = get_demand_weekly_by_cluster(df)
-    else:
-        df_weekly = get_demand_weekly(df)
+    
+    df_weekly = get_demand_weekly(df)
 
     # for calculation purposes
     df_weekly["date"] = pd.to_datetime(

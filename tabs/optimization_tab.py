@@ -46,7 +46,7 @@ def optimization_tab(df_sku: pd.DataFrame,selected_date=None):
     df_grid_point = pd.concat([base_row] * len(price_grid), ignore_index=True)
     df_grid_point["price_final"] = price_grid
     X_grid_point = df_grid_point[features]
-    X_grid_point["forecasted_demand"].values[:] = st.session_state.get("specific_forecasted_demand",0) if selected_date else df_sku["demand"].mean()
+    X_grid_point["forecasted_demand"].values[:] = st.session_state.get("specific_forecasted_demand",0)/7 if selected_date else df_sku["demand"].mean()
 
     df_sku["hover_text"] = (
         "Y" + df_sku["year"].astype(str) +
